@@ -18,7 +18,21 @@ public class TaiKhoanDao {
         return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
-    // Ham mo tai khoan (them the moi)
+    // Ham kiem tra xem ID khach hang co  ton tai ko
+    public boolean kiemTraKhachHangTonTai(int idKH) {
+        String sql = "SELECT id FROM khach_hang WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, idKH);
+            try (ResultSet rs = pst.executeQuery()) {
+                return rs.next(); 
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Ham mo tai khoan, them the moi
     public boolean addTaiKhoan(TaiKhoan tk) {
         boolean isSuccess = false;
         String sql = "INSERT INTO tai_khoan (so_tai_khoan, khach_hang_id, trang_thai, nhan_vien_id) VALUES (?, ?, ?, ?)";
@@ -40,6 +54,41 @@ public class TaiKhoanDao {
         }
         return isSuccess;
     }
+
+
+    // Hàm hiển thị danh sách tài khoản theo ID khách hàng
+    public boolean hienThiTaiKhoanCuaKhach(int khachHangId) {
+        boolean hasAccount = false;
+        String sql = "SELECT so_tai_khoan, so_du, trang_thai FROM tai_khoan WHERE khach_hang_id = ?";
+
+        try (Connection conn = getConnection();
+            PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setInt(1, khachHangId);
+            try (ResultSet rs = pst.executeQuery()) {
+                System.out.println("\n--- DANH SACH TAI KHOAN CUA KHACH HANG (ID: " + khachHangId + ") ---");
+                while (rs.next()) {
+                    hasAccount = true;
+                    String soTK = rs.getString("so_tai_khoan");
+                    double soDu = rs.getDouble("so_du");
+                    int trangThai = rs.getInt("trang_thai");
+                    String ttStr = (trangThai == 1) ? "Dang hoat dong" : "Bi khoa";
+
+                    System.out.printf("[-] So TK: %s | So du: %,d VND | Trang thai: %s\n", soTK, (long)soDu, ttStr);
+                }
+                if (!hasAccount) {
+                    System.out.println("[-] Khach hang nay chua co tai khoan ngan hang nao!");
+                }
+                System.out.println("--------------------------------------------------");
+            }
+            System.out.println("--------------------------------------------------");
+        } catch (Exception e) {
+        System.out.println("[-] Loi lay danh sach tai khoan: " + e.getMessage());
+        }
+        return hasAccount;
+    }
+
+
 
     // Ham nap tien
     public boolean napTien(String soTK, double soTienNap) {
@@ -84,32 +133,28 @@ public class TaiKhoanDao {
         return isSuccess;
     }
 
-    // Ham chuyen khoan noi bo (Ap dung Transaction)
+    // Ham chuyen khoan noi bo
     public boolean chuyenKhoan(String tkGui, String tkNhan, double soTien) {
         boolean isSuccess = false;
         Connection conn = null;
         try {
             conn = getConnection();
             
-            // 1. TAT AUTO-COMMIT
-            conn.setAutoCommit(false); 
+            conn.setAutoCommit(false);
             
-            // 2. TRU TIEN TAI KHOAN GUI 
             String sqlTru = "UPDATE tai_khoan SET so_du = so_du - ? WHERE so_tai_khoan = ? AND trang_thai = 1 AND so_du >= ?";
             PreparedStatement pstTru = conn.prepareStatement(sqlTru);
             pstTru.setDouble(1, soTien);
             pstTru.setString(2, tkGui);
             pstTru.setDouble(3, soTien);
             int dongTru = pstTru.executeUpdate();
-            
-            // 3. CONG TIEN TAI KHOAN NHAN 
+             
             String sqlCong = "UPDATE tai_khoan SET so_du = so_du + ? WHERE so_tai_khoan = ? AND trang_thai = 1";
             PreparedStatement pstCong = conn.prepareStatement(sqlCong);
             pstCong.setDouble(1, soTien);
             pstCong.setString(2, tkNhan);
             int dongCong = pstCong.executeUpdate();
             
-            // 4. PHAN QUYET
             if (dongTru > 0 && dongCong > 0) {
                 conn.commit(); 
                 isSuccess = true;
@@ -131,10 +176,9 @@ public class TaiKhoanDao {
         return isSuccess;
     }
 
-    // Ham khoa / mo khoa the khan cap (Nghiep vu)
+    // Ham khoa / mo khoa the khan cap
     public boolean khoaMoKhoaThe(String soTK) {
         boolean isSuccess = false;
-        // Meo SQL: Dung 1 - trang_thai de dao nguoc gia tri (Neu 1 thi thanh 0, neu 0 thi thanh 1)
         String sql = "UPDATE tai_khoan SET trang_thai = 1 - trang_thai WHERE so_tai_khoan = ?";
         
         try (Connection conn = getConnection();

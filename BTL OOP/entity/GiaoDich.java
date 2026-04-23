@@ -10,11 +10,10 @@ public class GiaoDich {
     private double soTien;
     private Timestamp ngayGiaoDich;
     private String ghiChu;
-
-    // Constructor rong
+    
     public GiaoDich() {}
 
-    // Pheu 1: Dung khi lay du lieu LICH SU tu MySQL len (Day du 7 cot)
+    // 1: Dung khi lay du lieu LICH SU tu MySQL len (Day du 7 cot)
     public GiaoDich(int id, int taiKhoanId, int nhanVienId, String loaiGiaoDich, double soTien, Timestamp ngayGiaoDich, String ghiChu) {
         this.id = id;
         this.taiKhoanId = taiKhoanId;
@@ -25,7 +24,7 @@ public class GiaoDich {
         this.ghiChu = ghiChu;
     }
 
-    // Pheu 2: Dung khi Giao dich vien vua thuc hien NAP/RUT/CHUYEN KHOAN xong
+    // 2: Dung khi Giao dich vien vua thuc hien NAP/RUT/CHUYEN KHOAN xong
     // (Khong can truyen id va ngayGiaoDich vi MySQL tu dong luu thoi gian)
     public GiaoDich(int taiKhoanId, int nhanVienId, String loaiGiaoDich, double soTien, String ghiChu) {
         this.taiKhoanId = taiKhoanId;
@@ -56,7 +55,6 @@ public class GiaoDich {
     public String getGhiChu() { return ghiChu; }
     public void setGhiChu(String ghiChu) { this.ghiChu = ghiChu; }
     
-    // Ham in thong tin de test
     @Override
     public String toString() {
         return "GiaoDich{" +

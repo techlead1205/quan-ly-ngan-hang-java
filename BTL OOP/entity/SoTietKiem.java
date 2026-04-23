@@ -12,10 +12,9 @@ public class SoTietKiem {
     private int trangThai;
     private int nhanVienId;
 
-    // Them Constructor rong (Chuan OOP)
     public SoTietKiem() {}
 
-    // Pheu 1: Dung de map du lieu tu Database len (Full 8 tham so)
+    // Dung de map du lieu tu Database len 
     public SoTietKiem(int id, int khachHangId, double soTienGoc, int kyHan, double laiSuat, Timestamp ngayGui, int trangThai, int nhanVienId) {
         this.id = id;
         this.khachHangId = khachHangId;
@@ -27,7 +26,7 @@ public class SoTietKiem {
         this.nhanVienId = nhanVienId;
     }
 
-    // Pheu 2: Dung de tao So moi o Menu Giao Dich Vien (Bo id va ngay_gui)
+    //  Dung de tao So moi o Menu Giao Dich Vien (Bo id va ngay_gui)
     public SoTietKiem(int khachHangId, double soTienGoc, int kyHan, double laiSuat, int trangThai, int nhanVienId) {
         this.khachHangId = khachHangId;
         this.soTienGoc = soTienGoc;
@@ -37,7 +36,6 @@ public class SoTietKiem {
         this.nhanVienId = nhanVienId;
     }
 
-    // --- GETTERS VA SETTERS ---
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -63,7 +61,6 @@ public class SoTietKiem {
     public void setNhanVienId(int nhanVienId) { this.nhanVienId = nhanVienId; }
     
 
-    // Them ham in thong tin de test
     @Override
     public String toString() {
         return "SoTietKiem{" +

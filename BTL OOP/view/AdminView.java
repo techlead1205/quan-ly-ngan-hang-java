@@ -9,7 +9,7 @@ import entity.NhanVien;
 public class AdminView {
 
     // MENU ADMIN
-    public static void showMenuAdmin(Scanner scanner) {
+    public static void showMenuAdmin(Scanner sc) {
         boolean isRunning = true;
         NhanVienDao dao = new NhanVienDao(); 
 
@@ -23,7 +23,7 @@ public class AdminView {
             System.out.println("========================================");
             System.out.print("[-] Moi ban chon chuc nang (0-4): ");
 
-            String choice = scanner.nextLine(); // Doc lua chon cua nguoi dung
+            String choice = sc.nextLine().trim();
 
             switch (choice) {
                 case "1":
@@ -35,8 +35,7 @@ public class AdminView {
                     System.out.println("-------------------------------------------------------------------------");
                     
                     for (NhanVien n : ds) {
-                        // Da tra ve dung: 1 la Admin, 2 la Giao Dich Vien theo CSDL
-                        String roleStr = (n.getRole() == 1) ? "Admin" : "Giao Dich Vien"; 
+                        String roleStr = (n.getRole() == 1) ? "Admin" : "Giao Dich Vien";
                         String statusStr = (n.getStatus() == 1) ? "Dang lam" : "Nghi viec";
                         
                         System.out.printf("%-5d | %-20s | %-15s | %-15s | %-10s\n",  
@@ -47,25 +46,24 @@ public class AdminView {
 
                 case "2":
                     System.out.println("\n[*] Tinh nang: Them nhan vien moi");
-                    System.out.print("[-] Nhap ho ten: ");  
-                    String ten = scanner.nextLine();
-                    System.out.print("[-] Nhap username: ");
-                    String user = scanner.nextLine();
-                    String pass = "123456";
-                    System.out.println("[*] He thong tu dong cap mat khau mac dinh: 123456");                                
-                    
-                    // Da sua lai thanh 1 (Giao dich vien)
-                    int vaiTro = 2; 
-                    System.out.println("[*] Tu dong gan vai tro: GIAO DICH VIEN");
-                    
-                    int trangThai = 1; // Mac dinh luon la Dang lam viec
-                    System.out.println("[*] Tu dong gan trang thai: DANG LAM VIEC");
+    
+                    String ten = getString(sc, "[-] Nhap ho ten: ");
+                    String user = getString(sc, "[-] Nhap username: ");
 
-                    NhanVien nvMoi = new NhanVien(0, ten, user, pass, vaiTro, trangThai);
-                    
+                    String pass = "123456";
+                    System.out.println("[*] He thong tu dong cap mat khau mac dinh: 123456");
+    
+                    int vaiTro = 2;
+                    System.out.println("[*] Tu dong gan vai tro: GIAO DICH VIEN");
+    
+                    int trangThai = 1;
+                    System.out.println("[*] Tu dong gan trang thai: DANG LAM VIEC");
+    
+                    NhanVien nvMoi = new NhanVien(ten, user, pass, vaiTro, trangThai);
+    
                     boolean ketQua = dao.addNhanVien(nvMoi);
-                    
-                    if (ketQua) { // Viet ngan gon thay vi ketQua == true
+    
+                    if (ketQua) {
                         System.out.println("\n[+] THEM NHAN VIEN THANH CONG!");
                     } else {
                         System.out.println("\n[-] THEM NHAN VIEN THAT BAI! Vui long kiem tra lai.");
@@ -76,10 +74,8 @@ public class AdminView {
                 case "3":
                     System.out.println("\n[*] Tinh nang: Xoa nhan vien");
                     
-                    System.out.print("[-] Nhap ID nhan vien can xoa: ");
-                    int idXoa = Integer.parseInt(scanner.nextLine());
+                    int idXoa = getInt(sc, "[-] Nhap ID nhan vien can xoa: ");
                     
-                    // Goi DAO di thuc thi (khong can tao moi doi tuong DAO nua)
                     boolean ketQuaXoa = dao.deleteNhanVien(idXoa);
                     
                     if (ketQuaXoa) {
@@ -92,11 +88,18 @@ public class AdminView {
 
                 case "4":
                     System.out.println("\n[*] Tinh nang: Xem KPI Giao dich vien");
-                    System.out.print("[-] Nhap ID Nhan vien can kiem tra: ");
-                    int idCheck = Integer.parseInt(scanner.nextLine());
-                    
                     dao.NhanVienDao daoKPI = new dao.NhanVienDao();
-                    daoKPI.inKPIThangHienTai(idCheck);
+                    while (true) {
+                        int idCheck = getInt(sc, "[-] Nhap ID Nhan vien can kiem tra (Nhap 0 de huy): ");
+                        if (idCheck == 0) {
+                            System.out.println("[-] Da huy thao tac xem KPI.");
+                            break; 
+                        }
+                        boolean timThay = daoKPI.inKPIThangHienTai(idCheck);
+                        if (timThay) {
+                            break; 
+                        }
+                    }
                     break;
 
                 case "0":
@@ -110,8 +113,61 @@ public class AdminView {
 
             if (isRunning) { 
                 System.out.print("\n(Nhan Enter de tiep tuc...)");
-                scanner.nextLine();
+                sc.nextLine();
             }
         }
     } 
+
+
+
+
+
+
+
+
+
+
+
+
+    private static int getInt(Scanner sc, String message) {
+        while (true) {
+            System.out.print(message);
+            String input = sc.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("[-] LOI: Khong duoc de trong!");
+                continue;
+            }
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("[-] LOI: Vui long chi nhap so nguyen!");
+            }
+        }
+    }
+
+    private static String getString(Scanner sc, String message) {
+        while (true) {
+            System.out.print(message);
+            String input = sc.nextLine().trim();
+            if (!input.isEmpty()) {
+                return input;
+            }
+            System.out.println("[-] LOI: Khong duoc de trong!");
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

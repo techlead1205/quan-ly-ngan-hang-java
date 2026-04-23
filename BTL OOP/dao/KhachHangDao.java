@@ -1,18 +1,19 @@
 package dao;
 
+import entity.KhachHang;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLIntegrityConstraintViolationException;
-import entity.KhachHang;
+
 
 public class KhachHangDao {
     private String dbUrl = "jdbc:mysql://localhost:3306/quan_ly_ngan_hang";
     private String dbUser = "root";
     private String dbPassword = "123456";
-
-    // Ham ket noi dung chung de giam bot code lap lai
+    
     private Connection getConnection() throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
@@ -38,13 +39,33 @@ public class KhachHangDao {
             }
             
         } catch (SQLIntegrityConstraintViolationException e) {
-            // Bat loi trung lap du lieu
             System.out.println("[-] LOI: CCCD hoac So dien thoai da ton tai trong he thong!");
         } catch (Exception e) {
             System.out.println("[-] Loi them khach hang: " + e.getMessage());
         }
         
         return isSuccess;
+    }
+
+    public boolean updateKhachHang(int id, String hoTenMoi, String cccdMoi, String sdtMoi, String diaChiMoi) {
+        String sql = "UPDATE khach_hang SET ho_ten = ?, cccd = ?, so_dien_thoai = ?, dia_chi = ? WHERE id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+             
+            pst.setString(1, hoTenMoi);
+            pst.setString(2, cccdMoi);
+            pst.setString(3, sdtMoi);
+            pst.setString(4, diaChiMoi);
+            pst.setInt(5, id);
+            
+            int rowsAffected = pst.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (Exception e) {
+            System.out.println("[-] Loi cap nhat khach hang: " + e.getMessage());
+            return false;
+        }
     }
 
     // Ham tim kiem khach hang bang CCCD hoac So dien thoai
@@ -60,7 +81,6 @@ public class KhachHangDao {
             
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    // Da cap nhat de lay them tham so thu 7 (nguoi_tao_id)
                     kh = new KhachHang(
                         rs.getInt("id"),
                         rs.getString("ho_ten"),
@@ -68,7 +88,7 @@ public class KhachHangDao {
                         rs.getString("so_dien_thoai"),
                         rs.getString("dia_chi"),
                         rs.getTimestamp("ngay_tao"),
-                        rs.getInt("nguoi_tao_id") // Them vao day
+                        rs.getInt("nguoi_tao_id") 
                     );
                 }
             }
@@ -86,7 +106,6 @@ public class KhachHangDao {
         String sqlTaiKhoan = "SELECT SUM(so_du) as tong_atm FROM tai_khoan WHERE khach_hang_id = ? AND trang_thai = 1";
         String sqlSoTietKiem = "SELECT SUM(so_tien_goc) as tong_so FROM so_tiet_kiem WHERE khach_hang_id = ? AND trang_thai = 1";
         
-        // Dung 1 ket noi (conn) cho ca 2 cau truy van de tiet kiem tai nguyen
         try (Connection conn = getConnection()) {
             
             // 1. Gom tien tu the ATM

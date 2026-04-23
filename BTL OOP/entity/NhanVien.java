@@ -6,12 +6,8 @@ public class NhanVien {
     private String name;
     private String username;
     private String password;
-    
-    // role: 0 la Admin, 1 la Giao dich vien
-    private int role; 
-    
-    // status: 1 la dang hoat dong, 0 la bi khoa
-    private int status; 
+    private int role; // role: 1 la Admin, 2 la Giao dich vien
+    private int status; // status: 1 la dang hoat dong, 0 la bi khoa
 
     public NhanVien() {}
 

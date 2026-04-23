@@ -11,10 +11,9 @@ public class TaiKhoan {
     private Timestamp ngayMo;
     private int nhanVienId;
 
-    // Them constructor rong (Chuan OOP)
     public TaiKhoan() {}
 
-    // Pheu 1: Dung khi lay du lieu tu DB len (Full 7 tham so)
+    // Dung khi lay du lieu tu DB len
     public TaiKhoan(int id, String soTaiKhoan, int khachHangId, double soDu, int trangThai, Timestamp ngayMo, int nhanVienId) {
         this.id = id;
         this.soTaiKhoan = soTaiKhoan;
@@ -25,7 +24,7 @@ public class TaiKhoan {
         this.nhanVienId = nhanVienId;
     }
 
-    // Pheu 2: Dung khi Giao dich vien tao tai khoan moi (Chi can 3 thong tin)
+    // Dung khi Giao dich vien tao tai khoan moi (Chi can 3 thong tin)
     // (id, ngayMo tu dong sinh. So du ban dau luon la 0d nen khong can truyen)
     public TaiKhoan(String soTaiKhoan, int khachHangId, int trangThai, int nhanVienId) {
         this.soTaiKhoan = soTaiKhoan;
@@ -58,7 +57,6 @@ public class TaiKhoan {
     public int getNhanVienId() { return nhanVienId; }
     public void setNhanVienId(int nhanVienId) { this.nhanVienId = nhanVienId; }
 
-    // Ham in thong tin de test
     @Override
     public String toString() {
         return "TaiKhoan{" +

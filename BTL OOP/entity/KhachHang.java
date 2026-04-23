@@ -9,14 +9,11 @@ public class KhachHang {
     private String soDienThoai;
     private String diaChi;
     private Timestamp ngayTao;
-    
-    // Thuoc tinh moi de map voi cot nguoi_tao_id (Khoa ngoai) trong CSDL
     private int nguoiTaoId;
 
-    // Constructor rong (Chuan OOP)
     public KhachHang() {}
 
-    // Constructor day du tat ca thong tin (Dung khi lay du lieu tu CSDL len)
+    // Dung khi lay du lieu tu CSDL len
     public KhachHang(int id, String hoTen, String cccd, String soDienThoai, String diaChi, Timestamp ngayTao, int nguoiTaoId) {
         this.id = id;
         this.hoTen = hoTen;
@@ -27,7 +24,7 @@ public class KhachHang {
         this.nguoiTaoId = nguoiTaoId;
     }
 
-    // Constructor rut gon (Dung khi them khach hang moi - id va ngayTao se do CSDL tu dong sinh ra)
+    // Dung khi them khach hang moi - id va ngayTao se do CSDL tu dong sinh ra
     public KhachHang(String hoTen, String cccd, String soDienThoai, String diaChi, int nguoiTaoId) {
         this.hoTen = hoTen;
         this.cccd = cccd;
@@ -57,7 +54,6 @@ public class KhachHang {
     public int getNguoiTaoId() { return nguoiTaoId; }
     public void setNguoiTaoId(int nguoiTaoId) { this.nguoiTaoId = nguoiTaoId; }
 
-    // Ham in thong tin de test
     @Override
     public String toString() {
         return "KhachHang{" +

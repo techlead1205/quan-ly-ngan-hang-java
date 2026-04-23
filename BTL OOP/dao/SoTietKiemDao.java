@@ -1,10 +1,13 @@
 package dao;
 
+
+import entity.SoTietKiem;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import entity.SoTietKiem;
+
 
 public class SoTietKiemDao {
     private String dbUrl = "jdbc:mysql://localhost:3306/quan_ly_ngan_hang";
@@ -59,9 +62,9 @@ public class SoTietKiemDao {
                     java.sql.Timestamp ngayGui = rs.getTimestamp("ngay_gui");
                     
                     long diffInMillis = System.currentTimeMillis() - ngayGui.getTime();
-                    long soNgayGui = diffInMillis / (1000 * 60 * 60 * 24); 
+                    long soNgayGui = diffInMillis / (1000 * 60 * 60 * 24);
                     
-                    if (soNgayGui == 0) soNgayGui = 1;
+                    if (soNgayGui == 0) soNgayGui = 1; //
                     
                     double tienLai = (tienGoc * laiSuat * soNgayGui) / 365;
                     tongTien = tienGoc + tienLai;
@@ -79,7 +82,7 @@ public class SoTietKiemDao {
         return tongTien;
     }
 
-    // Ham tra cuu tien lai du tinh (Chi tinh lai, khong dong so)
+    // Ham tra cuu tien lai du tinh (Chi tinh lai)
     public double traCuuTienLaiDuTinh(int idSo) {
         double tienLai = -1;
         String sqlSelect = "SELECT so_tien_goc, lai_suat, ngay_gui FROM so_tiet_kiem WHERE id = ? AND trang_thai = 1";
@@ -108,4 +111,42 @@ public class SoTietKiemDao {
         }
         return tienLai;
     }
+
+   // Hàm hỗ trợ: Liệt kê danh sách sổ
+    public boolean inDanhSachSoTheoKhach(int khachHangId) {
+        boolean hasData = false;
+        String sql = "SELECT id, so_tien_goc, ky_han, lai_suat, ngay_gui FROM so_tiet_kiem WHERE khach_hang_id = ? AND trang_thai = 1";
+
+        try (Connection conn = getConnection();
+            PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setInt(1, khachHangId);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                System.out.println("\n--- DANH SACH SO TIET KIEM DANG HOAT DONG ---");
+                while (rs.next()) {
+                    hasData = true;
+                    int idSo = rs.getInt("id");
+                    long tienGoc = (long) rs.getDouble("so_tien_goc");
+                    int kyHan = rs.getInt("ky_han");
+                    double laiSuat = rs.getDouble("lai_suat");
+                    java.sql.Timestamp ngayGui = rs.getTimestamp("ngay_gui");
+
+                    String tienGocStr = String.format(java.util.Locale.US, "%,d", tienGoc);
+
+                    System.out.println("[-] ID So: " + idSo + " | Goc: " + tienGocStr + " VND | Ky han: " + kyHan + " thang | Lai: " + (laiSuat*100) + "% | Ngay gui: " + ngayGui);
+                }
+                if (!hasData) {
+                    System.out.println("[-] Khach hang nay khong co so tiet kiem nao dang mo, hoac sai ID!");
+                }
+                System.out.println("--------------------------------------------------");
+            }
+            } catch (Exception e) {
+                System.out.println("[-] Loi truy xuat danh sach so: " + e.getMessage());
+            }
+        return hasData;
+    }
+
+
+
 }
